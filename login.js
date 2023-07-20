@@ -13,24 +13,27 @@ const puppeteer = require('puppeteer');
     const page = await browser.newPage();
 
     try {
-      await page.goto('https://nic.eu.org/arf/en/');
+      await page.goto('https://www.cloudns.net/index/show/login/');
 
       // 等待页面加载完成
       await page.waitForTimeout(10000); // 增加等待时间，等待页面加载完全
 
-      // 清空Handle输入框的原有值-FREE
-      const handleInput = await page.$('#id_handle');
-      if (handleInput) {
-        await handleInput.click({ clickCount: 3 }); // 选中输入框的内容
-        await handleInput.press('Backspace'); // 删除原有值
+      // 清空邮箱和密码输入框的原有值
+      const emailInput = await page.$('#login2FAMail');
+      const passwordInput = await page.$('#login2FAPassword');
+      if (emailInput && passwordInput) {
+        await emailInput.click({ clickCount: 3 }); // 选中输入框的内容
+        await emailInput.press('Backspace'); // 删除原有值
+        await passwordInput.click({ clickCount: 3 }); // 选中输入框的内容
+        await passwordInput.press('Backspace'); // 删除原有值
       }
 
-      // 输入实际的账号和密码
-      await page.type('#id_handle', username);
-      await page.type('#id_password', password);
+      // 输入实际的用户名和密码
+      await page.type('#login2FAMail', username);
+      await page.type('#login2FAPassword', password);
 
       // 提交登录表单
-      const loginButton = await page.$('.action[type="submit"]');
+      const loginButton = await page.$('#login2faButton');
       if (loginButton) {
         await loginButton.click();
       } else {
@@ -42,7 +45,7 @@ const puppeteer = require('puppeteer');
 
       // 判断是否登录成功
       const isLoggedIn = await page.evaluate(() => {
-        const loginButton = document.querySelector('.action[value="Login"]');
+        const loginButton = document.querySelector('.button-loading[title="载入中..."]');
         return loginButton === null;
       });
 
