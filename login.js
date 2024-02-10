@@ -13,27 +13,17 @@ const puppeteer = require('puppeteer');
     const page = await browser.newPage();
 
     try {
-      await page.goto('https://www.cloudns.net/index/show/login/');
+      await page.goto('https://www.mediafire.com/login/');
 
       // 等待页面加载完成
       await page.waitForTimeout(10000); // 增加等待时间，等待页面加载完全
 
-      // 清空邮箱和密码输入框的原有值
-      const emailInput = await page.$('#login2FAMail');
-      const passwordInput = await page.$('#login2FAPassword');
-      if (emailInput && passwordInput) {
-        await emailInput.click({ clickCount: 3 }); // 选中输入框的内容
-        await emailInput.press('Backspace'); // 删除原有值
-        await passwordInput.click({ clickCount: 3 }); // 选中输入框的内容
-        await passwordInput.press('Backspace'); // 删除原有值
-      }
-
       // 输入实际的用户名和密码
-      await page.type('#login2FAMail', username);
-      await page.type('#login2FAPassword', password);
+      await page.type('#login_email', username);
+      await page.type('#login_pass', password);
 
       // 提交登录表单
-      const loginButton = await page.$('#login2faButton');
+      const loginButton = await page.$('button[type="submit"]');
       if (loginButton) {
         await loginButton.click();
       } else {
@@ -45,7 +35,7 @@ const puppeteer = require('puppeteer');
 
       // 判断是否登录成功
       const isLoggedIn = await page.evaluate(() => {
-        const loginButton = document.querySelector('.button-loading[title="载入中..."]');
+        const loginButton = document.querySelector('button[type="submit"][disabled]');
         return loginButton === null;
       });
 
